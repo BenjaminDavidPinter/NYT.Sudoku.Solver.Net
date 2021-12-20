@@ -3,6 +3,9 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
+using System.Threading;
+using System.Threading.Tasks;
+
 
 namespace Sudoku.Solver
 {
@@ -13,8 +16,9 @@ namespace Sudoku.Solver
             var summary = BenchmarkRunner.Run(typeof(MainClass));
         }
 
-        public static bool Validate(int[,] board, bool forSolution = true)
+        public static (bool, bool) Validate(int[,] board)
         {
+            bool validSudoku = true, solvedSudoku = true;
             for (int h = 0; h < 3; h++)
             {
                 for (int q = 0; q < 3; q++)
@@ -27,14 +31,16 @@ namespace Sudoku.Solver
                             int row = o + (3 * h),
                                 column = p + (q * 3),
                                 currentValue = board[row, column];
-                            
-                            if(currentValue == 0){
+
+                            if (currentValue == 0)
+                            {
+                                solvedSudoku = false;
                                 continue;
                             }
-                            
+
                             if (cube.Contains(currentValue))
                             {
-                                return false;
+                                return (false, false);
                             }
                             else
                             {
@@ -47,26 +53,16 @@ namespace Sudoku.Solver
 
             for (int i = 0; i < 9; i++)
             {
-                for (int j = 0; j < 9; j++)
+                if (Enumerable.Range(0, board.GetLength(0)).Select(x => board[i, x]).ToArray().GroupBy(x => x).Any(x => x.Key != 0 && x.Count() > 1) ||
+                    Enumerable.Range(0, board.GetLength(0)).Select(x => board[x, i]).ToArray().GroupBy(x => x).Any(x => x.Key != 0 && x.Count() > 1))
                 {
-                    if (forSolution && board[i, j] == 0)
-                    {
-                        return false;
-                    }
-                    else if (board[i, j] != 0)
-                    {
-                        if (Enumerable.Range(0, board.GetLength(0)).Select(x => board[j, x]).ToArray().GroupBy(x => x).Any(x => x.Key != 0 && x.Count() > 1) ||
-                            Enumerable.Range(0, board.GetLength(0)).Select(x => board[x, j]).ToArray().GroupBy(x => x).Any(x => x.Key != 0 && x.Count() > 1))
-                        {
-                            return false;
-                        }
-                    }
+                    return (false, false);
                 }
             }
-            return true;
+            return (validSudoku, solvedSudoku);
         }
 
-        public static int[,] Solve(int[,] board)
+        public static (int[,], bool) Solve(int[,] board)
         {
             for (int i = 0; i < 9; i++)
             {
@@ -77,25 +73,26 @@ namespace Sudoku.Solver
                         for (int k = 1; k < 10; k++)
                         {
                             board[i, j] = k;
-                            if (Validate(board, false))
+                            (var validSudoku, var solvedSudoku) = Validate(board);
+                            if (solvedSudoku)
                             {
-                                if (Validate(board))
+                                return (board, true);
+                            }
+                            else if (validSudoku)
+                            {
+                                (board, var solved) = Solve(board);
+                                if (solved)
                                 {
-                                    return board;
-                                }
-                                board = Solve(board);
-                                if (Validate(board))
-                                {
-                                    return board;
+                                    return (board, solved);
                                 }
                             }
                         }
                         board[i, j] = 0;
-                        return board;
+                        return (board, false);
                     }
                 }
             }
-            return board;
+            return (board, false);
         }
 
         [Benchmark]
@@ -112,7 +109,7 @@ namespace Sudoku.Solver
                 { 0, 0, 0, 0, 0, 6, 0, 0, 0 },
                 { 0, 9, 7, 0, 0, 0, 0, 4, 2 } };
 
-            board = Solve(board);
+            (board, var solved) = Solve(board);
             Console.WriteLine();
             for (int i = 0; i < 9; i++)
             {
