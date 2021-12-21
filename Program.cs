@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using System.Threading;
-using System.Threading.Tasks;
 
 
 namespace Sudoku.Solver
@@ -23,7 +18,7 @@ namespace Sudoku.Solver
             {
                 for (int q = 0; q < 3; q++)
                 {
-                    HashSet<int> cube = new HashSet<int>();
+                    List<int> cube = new List<int>(9);
                     for (int o = 0; o < 3; o++)
                     {
                         for (int p = 0; p < 3; p++)
@@ -53,11 +48,23 @@ namespace Sudoku.Solver
 
             for (int i = 0; i < 9; i++)
             {
-                if (Enumerable.Range(0, board.GetLength(0)).Select(x => board[i, x]).ToArray().GroupBy(x => x).Any(x => x.Key != 0 && x.Count() > 1) ||
-                    Enumerable.Range(0, board.GetLength(0)).Select(x => board[x, i]).ToArray().GroupBy(x => x).Any(x => x.Key != 0 && x.Count() > 1))
-                {
-                    return (false, false);
-                }
+		    List<int> rowValues = new List<int>(9);
+		    List<int> columnValues = new List<int>(9);
+		    for(int j = 0; j < 9; j++){
+			    int rowValue = board[i,j];
+			    int columnValue = board[j, i];
+		    	if (rowValues.Contains(rowValue) || columnValues.Contains(columnValue)){
+				return (false, false);
+			}
+			else {
+				if(rowValue != 0){
+				rowValues.Add(rowValue);
+				}
+				if(columnValue != 0){
+				columnValues.Add(columnValue);
+				}
+			}
+		    }
             }
             return (validSudoku, solvedSudoku);
         }
