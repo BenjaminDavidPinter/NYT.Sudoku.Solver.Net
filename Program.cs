@@ -14,11 +14,12 @@ namespace Sudoku.Solver
         public static (bool, bool) Validate(int[,] board)
         {
             bool validSudoku = true, solvedSudoku = true;
+            List<int> cube = new List<int>(9);
             for (int h = 0; h < 3; h++)
             {
                 for (int q = 0; q < 3; q++)
                 {
-                    List<int> cube = new List<int>(9);
+                    cube.Clear();
                     for (int o = 0; o < 3; o++)
                     {
                         for (int p = 0; p < 3; p++)
@@ -45,32 +46,40 @@ namespace Sudoku.Solver
                     }
                 }
             }
-
+            List<int> rowValues = new List<int>(9);
+            List<int> columnValues = new List<int>(9);
             for (int i = 0; i < 9; i++)
             {
-		    List<int> rowValues = new List<int>(9);
-		    List<int> columnValues = new List<int>(9);
-		    for(int j = 0; j < 9; j++){
-			    int rowValue = board[i,j];
-			    int columnValue = board[j, i];
-		    	if (rowValues.Contains(rowValue) || columnValues.Contains(columnValue)){
-				return (false, false);
-			}
-			else {
-				if(rowValue != 0){
-				rowValues.Add(rowValue);
-				}
-				if(columnValue != 0){
-				columnValues.Add(columnValue);
-				}
-			}
-		    }
+                rowValues.Clear();
+                columnValues.Clear();
+
+                for (int j = 0; j < 9; j++)
+                {
+                    int rowValue = board[i, j];
+                    int columnValue = board[j, i];
+                    if (rowValues.Contains(rowValue) || columnValues.Contains(columnValue))
+                    {
+                        return (false, false);
+                    }
+                    else
+                    {
+                        if (rowValue != 0)
+                        {
+                            rowValues.Add(rowValue);
+                        }
+                        if (columnValue != 0)
+                        {
+                            columnValues.Add(columnValue);
+                        }
+                    }
+                }
             }
             return (validSudoku, solvedSudoku);
         }
 
         public static (int[,], bool) Solve(int[,] board)
         {
+
             for (int i = 0; i < 9; i++)
             {
                 for (int j = 0; j < 9; j++)
@@ -117,15 +126,6 @@ namespace Sudoku.Solver
                 { 0, 9, 7, 0, 0, 0, 0, 4, 2 } };
 
             (board, var solved) = Solve(board);
-            Console.WriteLine();
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    Console.Write(board[i, j] + " ");
-                }
-                Console.WriteLine();
-            }
         }
     }
 
