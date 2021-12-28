@@ -134,8 +134,19 @@ namespace Sudoku.Solver
                 { 0, 0, 2, 7, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 6, 0, 0, 0 },
                 { 0, 9, 7, 0, 0, 0, 0, 4, 2 } };
-            (_, _) = Solve(board, 0, 0);
-        }
-    }
+            (board, _) = Solve(board, 0, 0);
 
+            /*
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    Console.Write($"{board[i, j]} ");
+                }
+                Console.WriteLine();
+            }
+            */
+        }
+
+    }
 }
