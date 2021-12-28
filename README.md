@@ -1,5 +1,3 @@
-A project to learn about the true performance capabilities of C#.
-
 ``` ini
 
 BenchmarkDotNet=v0.13.1, OS=macOS Monterey 12.0.1 (21A559) [Darwin 21.1.0]
@@ -10,6 +8,8 @@ Apple M1, 1 CPU, 8 logical and 8 physical cores
 
 
 ```
-|         Method |     Mean |    Error |   StdDev |
-|--------------- |---------:|---------:|---------:|
-| Solve_A_Puzzle | 16.50 ms | 0.017 ms | 0.014 ms |
+|        Method | cacheSize |         Mean |     Error |    StdDev |
+|-------------- |---------- |-------------:|----------:|----------:|
+|   Easy_Puzzle |         9 |     9.823 μs | 0.0111 μs | 0.0099 μs |
+| Medium_Puzzle |         9 | 4,080.303 μs | 2.4176 μs | 2.0188 μs |
+|   Hard_Puzzle |         9 | 3,961.032 μs | 2.8230 μs | 2.5025 μs |
