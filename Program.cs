@@ -1,4 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
+using System;
+using System.Collections.Generic;
 using BenchmarkDotNet.Running;
 
 
@@ -11,92 +13,98 @@ namespace Sudoku.Solver
             var summary = BenchmarkRunner.Run(typeof(MainClass));
         }
 
-        public static (bool, bool) Validate(int[,] board)
+        public static bool Validate(int[,] board, int rowPos, int colPos)
         {
-            bool validSudoku = true, solvedSudoku = true;
-            List<int> cube = new List<int>(9);
-            for (int h = 0; h < 3; h++)
+            List<int> cube = new List<int>(7);
+            int row,
+                column,
+                currentValue;
+
+            for (int o = 0; o < 3; o++)
             {
-                for (int q = 0; q < 3; q++)
+                for (int p = 0; p < 3; p++)
                 {
-                    cube.Clear();
-                    for (int o = 0; o < 3; o++)
+                    row = o + (3 * (rowPos / 3));
+                    column = p + ((colPos / 3) * 3);
+                    currentValue = board[row, column];
+
+                    if (cube.Contains(currentValue))
                     {
-                        for (int p = 0; p < 3; p++)
-                        {
-                            int row = o + (3 * h),
-                                column = p + (q * 3),
-                                currentValue = board[row, column];
-
-                            if (currentValue == 0)
-                            {
-                                solvedSudoku = false;
-                                continue;
-                            }
-
-                            if (cube.Contains(currentValue))
-                            {
-                                return (false, false);
-                            }
-                            else
-                            {
-                                cube.Add(currentValue);
-                            }
-                        }
-                    }
-                }
-            }
-            List<int> rowValues = new List<int>(9);
-            List<int> columnValues = new List<int>(9);
-            for (int i = 0; i < 9; i++)
-            {
-                rowValues.Clear();
-                columnValues.Clear();
-
-                for (int j = 0; j < 9; j++)
-                {
-                    int rowValue = board[i, j];
-                    int columnValue = board[j, i];
-                    if (rowValues.Contains(rowValue) || columnValues.Contains(columnValue))
-                    {
-                        return (false, false);
+                        return false;
                     }
                     else
                     {
-                        if (rowValue != 0)
+                        if (currentValue != 0)
                         {
-                            rowValues.Add(rowValue);
-                        }
-                        if (columnValue != 0)
-                        {
-                            columnValues.Add(columnValue);
+                            cube.Add(currentValue);
                         }
                     }
                 }
             }
-            return (validSudoku, solvedSudoku);
+
+
+            List<int> rowValues = new List<int>(9);
+            int rowValue;
+
+
+            for (int j = 0; j < 9; j++)
+            {
+                rowValue = board[rowPos, j];
+                if (rowValues.Contains(rowValue))
+                {
+                    return false;
+                }
+                else
+                {
+                    if (rowValue != 0)
+                    {
+                        rowValues.Add(rowValue);
+                    }
+                }
+            }
+
+
+            List<int> columnValues = new List<int>(9);
+            int columnValue;
+
+
+            for (int j = 0; j < 9; j++)
+            {
+                columnValue = board[j, colPos];
+                if (columnValues.Contains(columnValue))
+                {
+                    return false;
+                }
+                else
+                {
+                    if (columnValue != 0)
+                    {
+                        columnValues.Add(columnValue);
+                    }
+                }
+            }
+
+            return true;
         }
 
-        public static (int[,], bool) Solve(int[,] board)
+        public static (int[,], bool) Solve(int[,] board, int startRow, int startCol)
         {
-
-            for (int i = 0; i < 9; i++)
+            bool validSudoku = false,
+                 solved = false;
+            for (int i = startRow; i < 9; i++)
             {
-                for (int j = 0; j < 9; j++)
+                for (int j = startCol; j < 9; j++)
                 {
                     if (board[i, j] == 0)
                     {
                         for (int k = 1; k < 10; k++)
                         {
                             board[i, j] = k;
-                            (var validSudoku, var solvedSudoku) = Validate(board);
-                            if (solvedSudoku)
+                            validSudoku = Validate(board, i, j);
+                            if (validSudoku)
                             {
-                                return (board, true);
-                            }
-                            else if (validSudoku)
-                            {
-                                (board, var solved) = Solve(board);
+                                (board, solved) = Solve(board, i, j);
+
                                 if (solved)
                                 {
                                     return (board, solved);
@@ -104,11 +112,13 @@ namespace Sudoku.Solver
                             }
                         }
                         board[i, j] = 0;
+
                         return (board, false);
                     }
                 }
+                startCol = 0;
             }
-            return (board, false);
+            return (board, true);
         }
 
         [Benchmark]
@@ -124,8 +134,7 @@ namespace Sudoku.Solver
                 { 0, 0, 2, 7, 0, 0, 0, 0, 0 },
                 { 0, 0, 0, 0, 0, 6, 0, 0, 0 },
                 { 0, 9, 7, 0, 0, 0, 0, 4, 2 } };
-
-            (board, var solved) = Solve(board);
+            (_, _) = Solve(board, 0, 0);
         }
     }
 
