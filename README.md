@@ -50,3 +50,21 @@ BenchmarkDotNet=v0.13.1, OS=Windows 10.0.19045
 |   Easy_Puzzle |         9 |     8.059 us |  0.1603 us |  0.3345 us |
 | Medium_Puzzle |         9 | 3,759.834 us | 25.2988 us | 23.6645 us |
 |   Hard_Puzzle |         9 | 3,802.206 us | 26.2186 us | 24.5249 us |
+
+</br>
+</br>
+
+## Macbook Air (M2)
+```ini
+BenchmarkDotNet=v0.13.1, OS=macOS 14.3 (23D5033f) [Darwin 23.3.0]
+Apple M2, 1 CPU, 8 logical and 8 physical cores
+.NET SDK=8.0.100
+  [Host]     : .NET 8.0.0 (8.0.23.53103), Arm64 RyuJIT
+  DefaultJob : .NET 8.0.0 (8.0.23.53103), Arm64 RyuJIT
+```
+
+|        Method | cacheSize |         Mean |      Error |     StdDev |
+|-------------- |---------- |-------------:|-----------:|-----------:|
+|   Easy_Puzzle |         9 |     6.540 us |  0.1295 us |  0.2368 us |
+| Medium_Puzzle |         9 | 2,680.624 us |  7.6334 us |  6.7668 us |
+|   Hard_Puzzle |         9 | 2,648.034 us | 12.1237 us | 10.7473 us |
