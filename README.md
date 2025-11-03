@@ -68,3 +68,18 @@ Apple M2, 1 CPU, 8 logical and 8 physical cores
 |   Easy_Puzzle |         9 |     6.540 us |  0.1295 us |  0.2368 us |
 | Medium_Puzzle |         9 | 2,680.624 us |  7.6334 us |  6.7668 us |
 |   Hard_Puzzle |         9 | 2,648.034 us | 12.1237 us | 10.7473 us |
+
+## Work Laptop (2025)
+```ini
+BenchmarkDotNet=v0.13.1, OS=Windows 10.0.26100
+Unknown processor
+.NET SDK=9.0.306
+  [Host]     : .NET 8.0.21 (8.0.2125.47513), X64 RyuJIT
+  DefaultJob : .NET 8.0.21 (8.0.2125.47513), X64 RyuJIT
+```
+
+|        Method | cacheSize |         Mean |      Error |     StdDev |
+|-------------- |---------- |-------------:|-----------:|-----------:|
+|   Easy_Puzzle |         9 |     4.732 us |  0.0586 us |  0.0548 us |
+| Medium_Puzzle |         9 | 2,079.595 us | 30.1661 us | 28.2174 us |
+|   Hard_Puzzle |         9 | 1,933.478 us | 15.2173 us | 13.4898 us |
